@@ -1,7 +1,14 @@
-# venv/
-# __pycache__/
-# *.pyc
-# .env
-# *.db
-# .DS_Store
-# reports/
+# pasta do ambiente virtual — cada dev cria o seu localmente
+venv/
+# arquivos gerados automaticamente pelo Python ao executar o código
+__pycache__/
+*.pyc
+# variáveis de ambiente — contém a SECRET_KEY e o caminho do banco
+# NUNCA subir para o GitHub
+.env
+# arquivos de banco de dados — não sobem para o GitHub
+*.db
+# arquivo gerado automaticamente pelo Mac — sem utilidade no projeto
+.DS_Store
+# relatórios CSV gerados pelas automações — ficam só na máquina local
+reports/
