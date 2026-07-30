@@ -10,10 +10,18 @@ load_dotenv()  # carrega as variáveis do .env
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # caminho absoluto da pasta database/
 
 def get_connection():
-    db_path = os.getenv("DB_PATH")  # busca o caminho do banco no .env
+    # busca o caminho do banco no .env
+    db_path = os.getenv("DB_PATH")
+    print(f"DB_PATH: {db_path}")
     # se o banco não foi configurado ainda, retorna None
     if not db_path:
         return None
+    # se o caminho for relativo (ex: "database/opsmanager.db")
+    # resolve a partir da raiz do projeto em vez do diretório atual
+    if not os.path.isabs(db_path):
+        ROOT_DIR = os.path.dirname(BASE_DIR)  # sobe uma pasta acima de database/
+        db_path = os.path.join(ROOT_DIR, db_path)
+        print(f"Caminho resolvido: {db_path}")
     # se já existe uma conexão aberta nessa requisição, reutiliza
     # evita abrir múltiplas conexões para a mesma requisição
     if "db" not in g:

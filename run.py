@@ -1,27 +1,11 @@
 import os
+import sys
 
-from dotenv import load_dotenv
-from flask import Flask
+# adiciona a raiz do projeto ao caminho de busca do Python
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-load_dotenv()  # carrega as variáveis do .env antes de criar a aplicação
+from app import create_app
 
-def create_app():
-    # cria a aplicação Flask
-    # template_folder → onde ficam os HTMLs (Jinja2)
-    # static_folder   → onde ficam CSS, JS e imagens
-    app = Flask(__name__, template_folder="../templates", static_folder="../static")
-
-    # define a chave secreta usada para proteger sessões e cookies
-    # vem do .env — nunca hardcoded no código
-    app.secret_key = os.getenv("SECRET_KEY")
-
-    # registra o close_connection para ser chamado automaticamente
-    # ao fim de cada requisição — garante que a conexão sempre fecha
-    from database.conexao import close_connection
-    app.teardown_appcontext(close_connection)
-
-    # registra o blueprint do dashboard — agrupa as rotas de /
-    # from app.views.dashboard_routes import dashboard_bp
-    # app.register_blueprint(dashboard_bp)
-
-    return app
+app = create_app()
+if __name__ == "__main__":
+    app.run(debug=True)
