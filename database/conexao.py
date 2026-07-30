@@ -6,10 +6,12 @@ from dotenv import load_dotenv, set_key
 from flask import g  # g é um objeto do Flask que dura apenas uma requisição
 
 load_dotenv()  # carrega as variáveis do .env
+print(f"DB_PATH no load: {os.getenv('DB_PATH')}")  # ← adiciona aqui
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # caminho absoluto da pasta database/
 
 def get_connection():
+    load_dotenv(override=True)
     # busca o caminho do banco no .env
     db_path = os.getenv("DB_PATH")
     print(f"DB_PATH: {db_path}")
