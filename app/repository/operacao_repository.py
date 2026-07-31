@@ -21,9 +21,10 @@ def buscar_porid(id):
     db = get_connection()
     row = db.execute("select * from operacoes where id = ?",(id,)).fetchone()
     return dict(row) if row else None
-def criar_operacao(operacao):
+def criar_operacao(operacao, id_usuario):
     db = get_connection()
     db.execute(
-    "insert into operacoes (nome, descricao, id_categoria, status) VALUES (?,?,?,?)",
-    (operacao._nome, operacao._descricao, operacao._id_categoria, operacao._status))
+        "insert into operacoes (nome, descricao, id_categoria, id_usuario, status) VALUES (?,?,?,?,?)",
+        (operacao._nome, operacao._descricao, operacao._id_categoria, id_usuario, operacao._status)
+    )
     db.commit()
