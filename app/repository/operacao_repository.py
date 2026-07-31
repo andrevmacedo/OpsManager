@@ -3,10 +3,24 @@ from database.conexao import get_connection
 
 def listar_todas():
     db = get_connection()
-    return db.execute("select * from operacoes").fetchall()
+    rows = db.execute('''
+        select 
+            op.id,
+            op.nome,
+            op.descricao,
+            op.status,
+            op.criado_em,
+            categorias.nome as categoria,
+            usuarios.nome as responsavel
+        from operacoes op
+        inner join categorias on op.id_categoria = categorias.id
+        inner join usuarios on op.id_usuario = usuarios.id
+    ''').fetchall()
+    return [dict(row) for row in rows]
 def buscar_porid(id):
     db = get_connection()
-    return db.execute("select * from operacoes where id = ?",(id,)).fetchone()
+    row = db.execute("select * from operacoes where id = ?",(id,)).fetchone()
+    return dict(row) if row else None
 def criar_operacao(operacao):
     db = get_connection()
     db.execute(

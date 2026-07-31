@@ -23,8 +23,9 @@ def criar():
     nome = request.form.get("nome")
     descricao = request.form.get("descricao")
     id_categoria = request.form.get("id_categoria")
+    senha = request.form.get("senha")
     # passa os dados para o service processar e salvar no banco
-    operacao_service.criar(nome, descricao, id_categoria)
+    operacao_service.criar(nome, descricao, id_categoria,senha)
     # redireciona de volta para a lista após criar
     # url_for("operacoes.index") gera a URL /operacoes
     return redirect(url_for("operacoes.index"))

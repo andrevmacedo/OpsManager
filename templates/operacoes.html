@@ -1,30 +1,229 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <title>Operações</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpsManager — Operações</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/operacoes.css') }}">
 </head>
 <body>
-    <h1>Operações</h1>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>Descrição</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for op in operacoes %}
-            <tr>
-                <td>{{ op['id'] }}</td>
-                <td>{{ op['nome'] }}</td>
-                <td>{{ op['descricao'] }}</td>
-                <td>{{ op['status'] }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="app">
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+      <div>
+        <div class="brand-name">OpsManager</div>
+        <div class="brand-version">v2.4.1</div>
+      </div>
+      <button class="icon-btn sidebar-close" id="sidebarCloseBtn" aria-label="Fechar menu"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+
+    <nav class="sidebar-nav" id="sidebarNav">
+      <p class="nav-section-label">Principal</p>
+      <button class="nav-item" data-page="Dashboard"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>Dashboard</button>
+      <button class="nav-item active" data-page="Operações"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Operações<span class="nav-badge" id="navOpsBadge">12</span></button>
+      <button class="nav-item" data-page="Processos"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Processos</button>
+      <button class="nav-item" data-page="Automações"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Automações</button>
+      <button class="nav-item" data-page="Relatórios"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Relatórios</button>
+      <button class="nav-item" data-page="Logs"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/></svg>Logs</button>
+
+      <p class="nav-section-label second">Sistema</p>
+      <button class="nav-item" data-page="Usuários"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Usuários</button>
+      <button class="nav-item" data-page="Configurações"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Configurações</button>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="user-row" id="sidebarUserRow">
+        <div class="avatar">AD</div>
+        <div>
+          <div class="user-name">Admin</div>
+          <div class="user-email">admin@opsmanager.io</div>
+        </div>
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <header class="topbar">
+      <button class="icon-btn menu-toggle" id="menuBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="topbarSearch" placeholder="Buscar operações, processos...">
+      </div>
+      <div class="topbar-actions">
+        <span class="env-pill"><span class="env-dot"></span> Produção</span>
+        <button class="icon-btn" id="topbarRefreshBtn" title="Atualizar dados"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button>
+
+        <div class="dropdown-wrap">
+          <button class="icon-btn" id="notifBtn" title="Notificações">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span class="notif-dot" id="notifDot"></span>
+          </button>
+          <div class="dropdown-panel notif-panel" id="notifPanel">
+            <div class="dropdown-header">
+              <span>Notificações</span>
+              <button class="link-btn" id="markAllReadBtn">Marcar todas como lidas</button>
+            </div>
+            <div id="notifList"></div>
+          </div>
+        </div>
+
+        <div class="dropdown-wrap">
+          <div class="topbar-user" id="userMenuBtn">
+            <div class="avatar">AD</div>
+            <span>Admin</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="dropdown-panel user-panel" id="userPanel">
+            <button class="dropdown-item" data-action="profile">Meu perfil</button>
+            <button class="dropdown-item" data-action="settings">Configurações</button>
+            <button class="dropdown-item danger" data-action="logout">Sair</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="content">
+      <div class="page" id="operacoesPage">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Operações</h1>
+            <p class="page-sub">Gerencie e monitore todas as operações do sistema</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn" id="exportBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Exportar</button>
+            <button class="btn btn-primary" id="newOpBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Nova Operação</button>
+          </div>
+        </div>
+
+        <div class="tabs" id="tabs">
+          <button class="tab active" data-status="all">Todas <span class="tab-count" id="count-all">12</span></button>
+          <button class="tab" data-status="running">Executando <span class="tab-count" id="count-running">2</span></button>
+          <button class="tab" data-status="success">Concluídas <span class="tab-count" id="count-success">6</span></button>
+          <button class="tab" data-status="warning">Atenção <span class="tab-count" id="count-warning">2</span></button>
+          <button class="tab" data-status="error">Erros <span class="tab-count" id="count-error">2</span></button>
+        </div>
+
+        <div class="filters-bar">
+          <div class="search-input-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="searchInput" placeholder="Buscar por ID, processo ou responsável...">
+          </div>
+          <div class="filter-group">
+            <button class="btn" id="refreshBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>Atualizar</button>
+          </div>
+        </div>
+
+        <div class="bulk-bar" id="bulkBar">
+          <span id="bulkCount">0 selecionadas</span>
+          <div class="bulk-actions">
+            <button class="btn" id="bulkExportBtn">Exportar selecionadas</button>
+            <button class="btn btn-danger" id="bulkDeleteBtn">Excluir selecionadas</button>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:2rem;"><input type="checkbox" id="selectAllCheckbox"></th>
+                  <th>ID</th><th>Processo</th><th>Categoria</th><th>Status</th>
+                  <th>Responsável</th><th>Início</th><th>Duração</th><th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+          </div>
+
+          <div class="pagination">
+            <span class="pagination-info" id="paginationInfo"></span>
+            <div class="pagination-controls" id="paginationControls"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Placeholder para outras páginas do menu -->
+      <div class="page placeholder-page" id="placeholderPage" style="display:none;">
+        <div class="placeholder-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <h2 id="placeholderTitle">Página</h2>
+          <p>Esta seção é apenas uma demonstração de navegação neste template. Clique em <strong>Operações</strong> no menu para voltar à página funcional.</p>
+          <button class="btn btn-primary" id="backToOpsBtn">Voltar para Operações</button>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Modal de detalhes -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modalBox">
+    <div class="modal-header">
+      <div>
+        <p class="modal-title" id="modalId"></p>
+        <p class="modal-subtitle" id="modalProcess"></p>
+      </div>
+      <button class="modal-close" id="modalCloseBtn">Fechar</button>
+    </div>
+    <div class="modal-grid" id="modalGrid"></div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" id="modalRerunBtn">Reexecutar</button>
+      <button class="btn" id="modalLogsBtn">Ver Logs</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Nova Operação -->
+<div class="modal-overlay" id="newOpOverlay">
+  <div class="modal" id="newOpBox">
+    <div class="modal-header">
+      <div>
+        <p class="modal-title">Nova Operação</p>
+        <p class="modal-subtitle">Preencha os dados para registrar uma nova operação</p>
+      </div>
+      <button class="modal-close" id="newOpCloseBtn">Fechar</button>
+    </div>
+    <div class="new-op-form">
+      <label>Processo
+        <input type="text" id="newOpProcess" placeholder="Ex: Sincronização de Estoque">
+      </label>
+      <label>Categoria
+        <select id="newOpCategory">
+          <option value="1">Relatório</option>
+          <option value="2">Limpeza</option>
+          <option value="3">Métricas</option>
+          <option value="4">Verificação</option>
+          <option value="5">Backup</option>
+          <option value="6">ETL</option>
+        </select>
+      </label>
+      <label>Descrição
+        <textarea id="newOpDescricao" placeholder="Descreva o que essa operação faz..." rows="3"></textarea>
+      </label>
+      <label>Senha de confirmação
+        <input type="password" id="newOpSenha" placeholder="Digite sua senha para confirmar">
+      </label>
+      <p class="form-error" id="newOpError"></p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" id="newOpSubmitBtn">Criar operação</button>
+      <button class="btn" id="newOpCancelBtn">Cancelar</button>
+    </div>
+  </div>
+</div>
+<div class="toast-container" id="toastContainer"></div>
+<!-- injeta os dados do banco no JavaScript -->
+<script>
+    // @ts-nocheck
+    const operacoesData = {{ operacoes | tojson | safe }};
+</script>
+<script src="{{ url_for('static', filename='js/operacoes.js') }}"></script>
 </body>
 </html>
