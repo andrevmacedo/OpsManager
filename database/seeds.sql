@@ -9,7 +9,7 @@ INSERT OR IGNORE INTO categorias (nome, cor) VALUES ('ETL', '#39D3BB');
 INSERT OR IGNORE INTO usuarios (nome, email, senha, perfil) VALUES
 ('João Silva', 'joao.silva@opsmanager.com', '123456', 'admin');
 INSERT OR IGNORE INTO usuarios (nome, email, senha, perfil) VALUES
-('Maria Oliveira', 'maria.oliveira@opsmanager.com', '123456', 'operador');
+('Maria Oliveira', 'maria.oliveira@opsmanager.com', '12345', 'operador');
 -- operacoes
 INSERT OR IGNORE INTO operacoes (nome, descricao, id_categoria, id_usuario, status) VALUES
 ('Gerar Relatório Diário', 'Exporta execuções do dia para CSV', 1, 1, 'ativa');

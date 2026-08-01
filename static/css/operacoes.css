@@ -360,3 +360,5 @@
   border-color: var(--blue-400);
   box-shadow: 0 0 0 3px rgba(59,130,246,.15);
 }
+.row-actions .logs:hover { background: var(--amber-50); color: var(--amber-700); }
+.row-actions .delete:hover { background: var(--red-50); color: var(--red-600); }

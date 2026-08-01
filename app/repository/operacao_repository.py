@@ -28,3 +28,7 @@ def criar_operacao(operacao, id_usuario):
         (operacao._nome, operacao._descricao, operacao._id_categoria, id_usuario, operacao._status)
     )
     db.commit()
+def excluir_operacao(id):
+    db = get_connection()
+    db.execute("delete from operacoes where id = ?",(id,))
+    db.commit()

@@ -133,18 +133,21 @@ function render() {
                 <rect x="4" y="4" width="16" height="16"/>
               </svg>
             </button>
-            <div class="more-wrap">
-              <button class="more" title="Mais ações" data-id="${op.id}">
-                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>
-                </svg>
-              </button>
-              <div class="more-menu" data-menu-for="${op.id}">
-                <button data-action="duplicate" data-id="${op.id}">Duplicar</button>
-                <button data-action="logs"      data-id="${op.id}">Ver logs</button>
-                <button class="danger" data-action="delete" data-id="${op.id}">Excluir</button>
-              </div>
-            </div>
+            <button class="logs" title="Ver logs" data-id="${op.id}">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+              </svg>
+            </button>
+            <button class="delete" title="Excluir" data-id="${op.id}">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                <path d="M10 11v6M14 11v6"/>
+              </svg>
+            </button>
           </div>
         </td>
       </tr>
@@ -172,12 +175,24 @@ function render() {
   });
 
   // bindings das ações por linha
+// bindings das ações por linha
   tbody.querySelectorAll('.view').forEach(btn => btn.onclick = () => openModal(btn.dataset.id));
   tbody.querySelectorAll('.play').forEach(btn => btn.onclick = () => runOperation(btn.dataset.id));
-  tbody.querySelectorAll('.stop').forEach(btn => btn.onclick = () => stopOperation(btn.dataset.id));
-  tbody.querySelectorAll('.more').forEach(btn => btn.onclick = e => { e.stopPropagation(); toggleMoreMenu(btn.dataset.id); });
-  tbody.querySelectorAll('.more-menu button').forEach(btn => {
-    btn.onclick = e => { e.stopPropagation(); handleMoreAction(btn.dataset.action, btn.dataset.id); };
+  tbody.querySelectorAll('.stop').forEach(btn => btn.onclick = () => stopOperation(btn.dataset.id)); // ← aqui
+  tbody.querySelectorAll('.logs').forEach(btn => btn.onclick = () => showToast(`Abrindo logs da operação ${btn.dataset.id}...`));
+  tbody.querySelectorAll('.delete').forEach(btn => btn.onclick = () => {
+    fetch(`/operacoes/${btn.dataset.id}/excluir`, { method: 'POST' })
+    .then(res => res.json())
+    .then(data => {
+      if (data.ok) {
+        allOps = allOps.filter(o => o.id !== btn.dataset.id);
+        state.selected.delete(btn.dataset.id);
+        render();
+        showToast(`Operação ${btn.dataset.id} excluída.`, 'error');
+      } else {
+        showToast(data.erro || 'Erro ao excluir.', 'error');
+      }
+    });
   });
   tbody.querySelectorAll('.row-checkbox').forEach(cb => {
     cb.onchange = () => {
@@ -235,37 +250,6 @@ function stopOperation(id) {
   showToast(`Operação ${id} finalizada.`);
 }
 
-function toggleMoreMenu(id) {
-  const menu   = document.querySelector(`.more-menu[data-menu-for="${id}"]`);
-  const isOpen = menu.classList.contains('open');
-  closeAllMoreMenus();
-  if (!isOpen) menu.classList.add('open');
-}
-function closeAllMoreMenus() {
-  document.querySelectorAll('.more-menu.open').forEach(m => m.classList.remove('open'));
-}
-
-function handleMoreAction(action, id) {
-  closeAllMoreMenus();
-  const op = allOps.find(o => o.id === id);
-  if (!op) return;
-
-  if (action === 'duplicate') {
-    const copy = { ...op, id: String(opCounter++), start: nowTime(), end: '—', status: 'running' };
-    allOps.unshift(copy);
-    state.page = 1;
-    render();
-    showToast(`Operação duplicada como ID ${copy.id}.`, 'success');
-  } else if (action === 'logs') {
-    showToast(`Abrindo logs da operação ${id}...`);
-  } else if (action === 'delete') {
-    allOps = allOps.filter(o => o.id !== id);
-    state.selected.delete(id);
-    render();
-    showToast(`Operação ${id} excluída.`, 'error');
-  }
-}
-
 // ============================================================
 // Modal de detalhes
 // ============================================================
@@ -277,9 +261,8 @@ function openModal(id) {
   const fields = [
     ['Status',      statusBadgeHtml(op.status)],
     ['Categoria',   `<span class="cat-pill">${op.category}</span>`],
-    ['Ambiente',    op.env],
     ['Responsável', op.owner],
-    ['Início',      op.start],
+    ['Criado em',      op.start],
     ['Término',     op.end],
     ['Duração',     op.duration],
   ];
@@ -378,7 +361,7 @@ document.getElementById('newOpOverlay').addEventListener('click', e => { if (e.t
 // ============================================================
 function exportToCsv(ops, filename) {
   if (ops.length === 0) { showToast('Nenhuma operação para exportar.'); return; }
-  const headers = ['ID', 'Processo', 'Categoria', 'Status', 'Ambiente', 'Responsável', 'Início', 'Término', 'Duração'];
+  const headers = ['ID', 'Processo', 'Categoria', 'Status', 'Ambiente', 'Responsável', 'Criado em', 'Término', 'Duração'];
   const rows    = ops.map(o => [o.id, o.process, o.category, statusCfg[o.status]?.label || o.status, o.env, o.owner, o.start, o.end, o.duration]);
   const csv     = [headers, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
   const blob    = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
@@ -427,14 +410,32 @@ document.getElementById('topbarSearch').addEventListener('input', e => syncSearc
 // Botões Atualizar
 // ============================================================
 function refreshData(btn) {
-  const icon = btn.querySelector('svg');
-  icon.classList.add('spin');
-  setTimeout(() => icon.classList.remove('spin'), 700);
-  setTimeout(() => { render(); showToast('Dados atualizados.', 'success'); }, 400);
-}
-document.getElementById('refreshBtn').addEventListener('click',        function () { refreshData(this); });
-document.getElementById('topbarRefreshBtn').addEventListener('click',  function () { refreshData(this); });
+  // busca o svg dentro do botão — pode estar em nivel mais profundo
+  const icon = btn.querySelector('svg') || btn.closest('button')?.querySelector('svg');
+  if (icon) icon.classList.add('spin');
 
+  fetch('/operacoes/listar')
+  .then(res => res.json())
+  .then(data => {
+    allOps = data.map(op => ({
+      id:            String(op.id),
+      process:       op.nome,
+      category:      op.categoria,
+      categoryColor: op.cor || '#94a3b8',
+      status:        op.status,
+      owner:         op.responsavel || '—',
+      start:         op.criado_em || '—',
+      end:           '—',
+      duration:      '—',
+    }));
+    render();
+    showToast('Dados atualizados.', 'success');
+  })
+  .catch(() => showToast('Erro ao atualizar.', 'error'))
+  .finally(() => { if (icon) icon.classList.remove('spin'); });
+}
+document.getElementById('refreshBtn').addEventListener('click', function () { refreshData(this); });
+document.getElementById('topbarRefreshBtn').addEventListener('click', function () { refreshData(this); });
 // ============================================================
 // Notificações
 // ============================================================
