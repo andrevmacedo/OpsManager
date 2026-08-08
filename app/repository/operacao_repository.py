@@ -10,7 +10,9 @@ def listar_todas():
             op.descricao,
             op.status,
             op.criado_em,
+            op.id_categoria,
             categorias.nome as categoria,
+            categorias.cor as cor,
             usuarios.nome as responsavel
         from operacoes op
         inner join categorias on op.id_categoria = categorias.id

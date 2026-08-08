@@ -195,12 +195,9 @@
       </label>
       <label>Categoria
         <select id="newOpCategory">
-          <option value="1">Relatório</option>
-          <option value="2">Limpeza</option>
-          <option value="3">Métricas</option>
-          <option value="4">Verificação</option>
-          <option value="5">Backup</option>
-          <option value="6">ETL</option>
+          {% for cat in categorias %}
+          <option value="{{ cat.id }}">{{ cat.nome }}</option>
+          {% endfor %}
         </select>
       </label>
       <label>Descrição
@@ -253,12 +250,9 @@
         <div class="edit-field">
           <label for="editCategorySelect" class="edit-field-label">Categoria</label>
           <select id="editCategorySelect" class="edit-select-input">
-            <option value="1">Relatório</option>
-            <option value="2">Limpeza</option>
-            <option value="3">Métricas</option>
-            <option value="4">Verificação</option>
-            <option value="5">Backup</option>
-            <option value="6">ETL</option>
+            {% for cat in categorias %}
+              <option value="{{ cat.id }}">{{ cat.nome }}</option>
+            {% endfor %}
           </select>
         </div>
         <div class="edit-field">

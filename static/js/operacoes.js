@@ -17,7 +17,8 @@ const statusCfg = {
 let allOps = operacoesData.map(op => ({
   id:       String(op.id),
   process:  op.nome,
-  category: op.categoria,   // vem do JOIN com categorias (a implementar)
+  category: op.categoria,
+  categoryId: op.id_categoria != null ? String(op.id_categoria) : '1',
   categoryColor: op.cor || '#94a3b8',
   status:   op.status,
   owner:         op.responsavel || '—',             // campo não existe no banco ainda
@@ -69,13 +70,20 @@ function nowTime() {
 
 function getFiltered() {
   return allOps.filter(o => {
-    const q = state.search.toLowerCase();
+    const q = state.search.trim().toLowerCase();
+
+    // se a busca for só números, compara o ID por igualdade (ignorando zeros à esquerda)
+    // assim "4" não bate com "14"/"24", e "04" também encontra o ID 4
+    const isNumericQuery = /^\d+$/.test(q);
+    const matchId = isNumericQuery
+      ? o.id === String(parseInt(q, 10))
+      : o.id.toLowerCase().includes(q);
+
     const matchSearch =
-      o.id.toLowerCase().includes(q) ||
+      matchId ||
       o.process.toLowerCase().includes(q) ||
       o.owner.toLowerCase().includes(q);
     const matchStatus = state.statusFilter === 'all' || o.status === state.statusFilter;
-    const matchEnv    = state.envFilter === 'all'    || o.env === state.envFilter;
     return matchSearch && matchStatus;
   });
 }
@@ -369,7 +377,7 @@ document.getElementById('newOpOverlay').addEventListener('click', e => { if (e.t
 // ============================================================
 function exportToCsv(ops, filename) {
   if (ops.length === 0) { showToast('Nenhuma operação para exportar.'); return; }
-  const headers = ['ID', 'Processo', 'Categoria', 'Status', 'Ambiente', 'Responsável', 'Criado em', 'Término', 'Duração'];
+  const headers = ['ID', 'Processo', 'Categoria', 'Status', 'Responsável', 'Criado em', 'Término', 'Duração'];
   const rows    = ops.map(o => [o.id, o.process, o.category, statusCfg[o.status]?.label || o.status, o.env, o.owner, o.start, o.end, o.duration]);
   const csv     = [headers, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
   const blob    = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
@@ -384,11 +392,30 @@ function exportToCsv(ops, filename) {
 document.getElementById('exportBtn').addEventListener('click',     () => exportToCsv(getFiltered(), 'operacoes.csv'));
 document.getElementById('bulkExportBtn').addEventListener('click', () => exportToCsv(allOps.filter(o => state.selected.has(o.id)), 'operacoes-selecionadas.csv'));
 document.getElementById('bulkDeleteBtn').addEventListener('click', () => {
-  const n = state.selected.size;
-  allOps = allOps.filter(o => !state.selected.has(o.id));
-  state.selected.clear();
-  render();
-  showToast(`${n} operação(ões) excluída(s).`, 'error');
+  const ids = Array.from(state.selected);
+  if (ids.length === 0) return;
+
+  Promise.all(
+    ids.map(id =>
+      fetch(`/operacoes/${id}/excluir`, { method: 'POST' })
+        .then(res => res.json())
+        .then(data => ({ id, ok: !!data.ok }))
+        .catch(() => ({ id, ok: false }))
+    )
+  ).then(results => {
+    const excluidos = results.filter(r => r.ok).map(r => r.id);
+    const falhas    = results.filter(r => !r.ok);
+
+    allOps = allOps.filter(o => !excluidos.includes(o.id));
+    excluidos.forEach(id => state.selected.delete(id));
+    render();
+
+    if (falhas.length === 0) {
+      showToast(`${excluidos.length} operação(ões) excluída(s).`, 'error');
+    } else {
+      showToast(`${excluidos.length} excluída(s), ${falhas.length} falharam.`, 'error');
+    }
+  });
 });
 
 // ============================================================
@@ -429,6 +456,7 @@ function refreshData(btn) {
       id:            String(op.id),
       process:       op.nome,
       category:      op.categoria,
+      categoryId:    op.id_categoria != null ? String(op.id_categoria) : '1',
       categoryColor: op.cor || '#94a3b8',
       status:        op.status,
       owner:         op.responsavel || '—',
@@ -497,7 +525,6 @@ function closeAllDropdowns(except) {
 }
 document.addEventListener('click', e => {
   if (!e.target.closest('.dropdown-wrap')) closeAllDropdowns();
-  if (!e.target.closest('.more-wrap'))     closeAllMoreMenus();
 });
 
 // ============================================================
