@@ -117,6 +117,12 @@ function render() {
         <td class="mono">${op.duration}</td>
         <td>
           <div class="row-actions">
+            <button class="edit" title="Editar" data-id="${op.id}">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+            </button>
             <button class="view" title="Ver detalhes" data-id="${op.id}">
               <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
@@ -176,24 +182,26 @@ function render() {
 
   // bindings das ações por linha
 // bindings das ações por linha
-  tbody.querySelectorAll('.view').forEach(btn => btn.onclick = () => openModal(btn.dataset.id));
-  tbody.querySelectorAll('.play').forEach(btn => btn.onclick = () => runOperation(btn.dataset.id));
-  tbody.querySelectorAll('.stop').forEach(btn => btn.onclick = () => stopOperation(btn.dataset.id)); // ← aqui
-  tbody.querySelectorAll('.logs').forEach(btn => btn.onclick = () => showToast(`Abrindo logs da operação ${btn.dataset.id}...`));
-  tbody.querySelectorAll('.delete').forEach(btn => btn.onclick = () => {
-    fetch(`/operacoes/${btn.dataset.id}/excluir`, { method: 'POST' })
-    .then(res => res.json())
-    .then(data => {
-      if (data.ok) {
-        allOps = allOps.filter(o => o.id !== btn.dataset.id);
-        state.selected.delete(btn.dataset.id);
-        render();
-        showToast(`Operação ${btn.dataset.id} excluída.`, 'error');
-      } else {
-        showToast(data.erro || 'Erro ao excluir.', 'error');
-      }
-    });
+  // bindings das ações por linha
+tbody.querySelectorAll('.edit').forEach(btn => btn.onclick = () => openEditModal(btn.dataset.id));
+tbody.querySelectorAll('.view').forEach(btn => btn.onclick = () => openModal(btn.dataset.id));
+tbody.querySelectorAll('.play').forEach(btn => btn.onclick = () => runOperation(btn.dataset.id));
+tbody.querySelectorAll('.stop').forEach(btn => btn.onclick = () => stopOperation(btn.dataset.id));
+tbody.querySelectorAll('.logs').forEach(btn => btn.onclick = () => showToast(`Abrindo logs da operação ${btn.dataset.id}...`));
+tbody.querySelectorAll('.delete').forEach(btn => btn.onclick = () => {
+  fetch(`/operacoes/${btn.dataset.id}/excluir`, { method: 'POST' })
+  .then(res => res.json())
+  .then(data => {
+    if (data.ok) {
+      allOps = allOps.filter(o => o.id !== btn.dataset.id);
+      state.selected.delete(btn.dataset.id);
+      render();
+      showToast(`Operação ${btn.dataset.id} excluída.`, 'error');
+    } else {
+      showToast(data.erro || 'Erro ao excluir.', 'error');
+    }
   });
+});
   tbody.querySelectorAll('.row-checkbox').forEach(cb => {
     cb.onchange = () => {
       if (cb.checked) state.selected.add(cb.dataset.id);
@@ -528,6 +536,126 @@ document.getElementById('menuBtn').addEventListener('click',          openSideba
 document.getElementById('sidebarCloseBtn').addEventListener('click',  closeSidebarMobile);
 document.getElementById('sidebarOverlay').addEventListener('click',   closeSidebarMobile);
 document.getElementById('sidebarUserRow').addEventListener('click',   () => showToast('Abrindo perfil do usuário...'));
+// ============================================================
+// Modal Editar Operação
+// ============================================================
+let currentEditId = null;
+
+function openEditModal(id) {
+  const op = allOps.find(o => o.id === id);
+  if (!op) return;
+  currentEditId = id;
+
+  // preenche os campos com os dados da operação
+  document.getElementById('editOpId').textContent         = `ID ${op.id}`;
+  document.getElementById('editProcessInput').value       = op.process;
+  document.getElementById('editCategorySelect').value     = op.categoryId || '1';
+  document.getElementById('editStatusSelect').value       = op.status;
+  document.getElementById('editOwnerInput').value         = op.owner;
+  document.getElementById('editPasswordInput').value      = '';
+
+  // limpa erros anteriores
+  document.getElementById('editProcessError').classList.remove('show');
+  document.getElementById('editPasswordError').classList.remove('show');
+  document.getElementById('editProcessInput').classList.remove('input-error');
+  document.getElementById('editPasswordWrap').classList.remove('input-error');
+
+  document.getElementById('editModalOverlay').classList.add('open');
+  document.getElementById('editProcessInput').focus();
+}
+
+function closeEditModal() {
+  document.getElementById('editModalOverlay').classList.remove('open');
+  currentEditId = null;
+}
+
+// toggle mostrar/ocultar senha
+document.getElementById('editTogglePw').addEventListener('click', () => {
+  const input   = document.getElementById('editPasswordInput');
+  const eye     = document.getElementById('editEyeIcon');
+  const eyeOff  = document.getElementById('editEyeOffIcon');
+  const showing = input.type === 'text';
+  input.type          = showing ? 'password' : 'text';
+  eye.style.display   = showing ? '' : 'none';
+  eyeOff.style.display = showing ? 'none' : '';
+});
+
+// limpa erros ao digitar
+document.getElementById('editProcessInput').addEventListener('input', () => {
+  document.getElementById('editProcessInput').classList.remove('input-error');
+  document.getElementById('editProcessError').classList.remove('show');
+});
+document.getElementById('editPasswordInput').addEventListener('input', () => {
+  document.getElementById('editPasswordWrap').classList.remove('input-error');
+  document.getElementById('editPasswordError').classList.remove('show');
+});
+
+// fecha ao clicar fora
+document.getElementById('editModalOverlay').addEventListener('click', e => {
+  if (e.target.id === 'editModalOverlay') closeEditModal();
+});
+document.getElementById('editCloseBtn').addEventListener('click', closeEditModal);
+document.getElementById('editCancelBtn').addEventListener('click', closeEditModal);
+
+// fecha com Esc
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.getElementById('editModalOverlay').classList.contains('open')) {
+    closeEditModal();
+  }
+});
+
+// salvar — envia para o Flask via fetch
+document.getElementById('editSaveBtn').addEventListener('click', () => {
+  const nome       = document.getElementById('editProcessInput').value.trim();
+  const categoria  = document.getElementById('editCategorySelect').value;
+  const status     = document.getElementById('editStatusSelect').value;
+  const senha      = document.getElementById('editPasswordInput').value.trim();
+  let hasError     = false;
+
+  // validações
+  if (!nome) {
+    document.getElementById('editProcessInput').classList.add('input-error');
+    document.getElementById('editProcessError').querySelector('span').textContent = 'Nome do processo obrigatório.';
+    document.getElementById('editProcessError').classList.add('show');
+    hasError = true;
+  }
+  if (!senha) {
+    document.getElementById('editPasswordWrap').classList.add('input-error');
+    document.getElementById('editPasswordError').querySelector('span').textContent = 'Informe sua senha para confirmar.';
+    document.getElementById('editPasswordError').classList.add('show');
+    hasError = true;
+  }
+  if (hasError) return;
+
+  fetch(`/operacoes/${currentEditId}/editar`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ nome, id_categoria: categoria, status, senha }),
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.ok) {
+      // atualiza localmente sem recarregar
+      const op = allOps.find(o => o.id === currentEditId);
+      if (op) {
+        op.process   = nome;
+        op.status    = status;
+        op.categoryId = categoria;
+        op.category  = data.categoria || op.category;
+        op.categoryColor = data.cor || op.categoryColor;
+      }
+      render();
+      closeEditModal();
+      showToast('Operação atualizada com sucesso.', 'success');
+    } else {
+      // exibe erro de senha no campo correto
+      document.getElementById('editPasswordWrap').classList.add('input-error');
+      document.getElementById('editPasswordError').querySelector('span').textContent = data.erro || 'Erro ao salvar.';
+      document.getElementById('editPasswordError').classList.add('show');
+    }
+  })
+  .catch(() => showToast('Erro de conexão.', 'error'));
+});
 
 // ============================================================
 // Init

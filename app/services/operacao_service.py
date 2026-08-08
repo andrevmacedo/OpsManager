@@ -20,3 +20,13 @@ def criar(nome, descricao, id_categoria, senha):
 def excluir(id):
     operacao_repository.excluir_operacao(id)
     return {"ok": True, "mensagem": "Operação excluída com sucesso."}
+def editar(id, nome, id_categoria, status, senha):
+    usuario = usuario_repository.verificar_senha(senha)
+    if not usuario:
+        return {"ok": False, "erro": "Senha incorreta."}
+    if usuario["perfil"] != "admin":
+        return {"ok": False, "erro": "Apenas administradores podem editar operações."}
+    operacao_repository.editar_operacao(id, nome, id_categoria, status)
+    # busca os dados atualizados para retornar ao JS
+    operacao = operacao_repository.buscar_porid(id)
+    return {"ok": True, "categoria": operacao["categoria"], "cor": operacao["cor"]}

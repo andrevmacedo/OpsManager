@@ -19,7 +19,22 @@ def listar_todas():
     return [dict(row) for row in rows]
 def buscar_porid(id):
     db = get_connection()
-    row = db.execute("select * from operacoes where id = ?",(id,)).fetchone()
+    row = db.execute('''
+        select
+            operacoes.id,
+            operacoes.nome,
+            operacoes.descricao,
+            operacoes.status,
+            operacoes.criado_em,
+            operacoes.id_categoria,
+            categorias.nome as categoria,
+            categorias.cor  as cor,
+            usuarios.nome   as responsavel
+        from operacoes
+        inner join categorias on operacoes.id_categoria = categorias.id
+        inner join usuarios   on operacoes.id_usuario   = usuarios.id
+        where operacoes.id = ?
+    ''', (id,)).fetchone()
     return dict(row) if row else None
 def criar_operacao(operacao, id_usuario):
     db = get_connection()
@@ -31,4 +46,12 @@ def criar_operacao(operacao, id_usuario):
 def excluir_operacao(id):
     db = get_connection()
     db.execute("delete from operacoes where id = ?",(id,))
+    db.commit()
+def editar_operacao(id, nome, id_categoria, status):
+    # colunas permitidas — evita SQL injection no nome da coluna
+    db = get_connection()
+    db.execute(
+        "update operacoes set nome = ?, id_categoria = ?, status = ? where id = ?",
+        (nome, id_categoria, status, id)
+    )
     db.commit()

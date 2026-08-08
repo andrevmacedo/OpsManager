@@ -54,3 +54,14 @@ def excluir(id):
         return jsonify(resultado)
     except Exception as e:  # noqa: BLE001
         return jsonify({"ok": False, "erro": str(e)})
+@operacao_bp.route("/operacoes/<int:id>/editar", methods=["POST"])
+def editar(id):
+    nome         = request.form.get("nome")
+    id_categoria = request.form.get("id_categoria")
+    status       = request.form.get("status")
+    senha        = request.form.get("senha")
+    try:
+        resultado = operacao_service.editar(id, nome, id_categoria, status, senha)
+        return jsonify(resultado)
+    except Exception as e:  # noqa: BLE001
+        return jsonify({"ok": False, "erro": str(e)})
