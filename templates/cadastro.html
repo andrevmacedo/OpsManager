@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpsManager · Cadastro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="stylesheet" href="/static/css/cadastro.css">
+</head>
+<body>
+
+<div class="page">
+
+  <!-- Painel esquerdo — branding -->
+  <div class="brand-panel">
+    <div class="brand-bg">
+      <div class="glow glow-1"></div>
+      <div class="glow glow-2"></div>
+      <div class="glow glow-3"></div>
+      <div class="dots"></div>
+    </div>
+
+    <div class="brand-logo">
+      <div class="logo-icon"><i data-lucide="activity"></i></div>
+      <div>
+        <span class="logo-text">OpsManager</span>
+        <p class="logo-sub">v2.4.1 · Produção</p>
+      </div>
+    </div>
+
+    <div class="brand-copy">
+      <div class="brand-heading">
+        <h1>Monitore operações<br><span>com total controle</span></h1>
+        <p>Plataforma unificada para acompanhar processos, automações e métricas operacionais em tempo real.</p>
+      </div>
+
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-icon"><i data-lucide="bar-chart-2"></i></div>
+          <span>Dashboards em tempo real</span>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon"><i data-lucide="zap"></i></div>
+          <span>Automações inteligentes</span>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon"><i data-lucide="shield-check"></i></div>
+          <span>Segurança e auditoria completa</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="brand-footer">
+      <p>© 2026 OpsManager · Todos os direitos reservados</p>
+    </div>
+  </div>
+
+  <!-- Painel direito — formulário -->
+  <div class="form-panel">
+    <div class="form-wrap">
+
+      <div class="mobile-logo">
+        <div class="logo-icon small"><i data-lucide="activity"></i></div>
+        <span class="logo-text dark">OpsManager</span>
+      </div>
+
+      <div class="heading">
+        <h2>Solicitar acesso</h2>
+        <p>Crie sua conta e aguarde a aprovação</p>
+      </div>
+
+      <!-- Link para login (página separada) -->
+      <div class="tabs">
+        <a class="tab" href="/login" id="tabLogin">Login</a>
+        <button class="tab active" id="tabRegister">Cadastro</button>
+      </div>
+
+      <!-- REGISTER FORM -->
+      <form id="registerForm" class="auth-form">
+        <div class="field">
+          <label>Nome completo</label>
+          <div class="input-box" id="regNameBox">
+            <i data-lucide="user" class="field-icon"></i>
+            <input type="text" id="regName" placeholder="Ex: Ana Ferreira">
+          </div>
+          <p class="field-error" id="regNameError" hidden></p>
+        </div>
+
+        <div class="field">
+          <label>E-mail corporativo</label>
+          <div class="input-box" id="regEmailBox">
+            <i data-lucide="mail" class="field-icon"></i>
+            <input type="email" id="regEmail" placeholder="ana@empresa.com">
+          </div>
+          <p class="field-error" id="regEmailError" hidden></p>
+        </div>
+
+        <div class="field">
+          <label>Senha</label>
+          <div class="input-box" id="regPasswordBox">
+            <i data-lucide="lock" class="field-icon"></i>
+            <input type="password" id="regPassword" placeholder="Crie uma senha forte">
+            <button type="button" class="icon-btn right" id="toggleRegPw"><i data-lucide="eye"></i></button>
+          </div>
+          <p class="field-error" id="regPasswordError" hidden></p>
+
+          <div class="pw-strength" id="pwStrength" hidden>
+            <div class="pw-bar-row">
+              <div class="pw-bars">
+                <div class="pw-bar" data-i="1"></div>
+                <div class="pw-bar" data-i="2"></div>
+                <div class="pw-bar" data-i="3"></div>
+                <div class="pw-bar" data-i="4"></div>
+              </div>
+              <span class="pw-label" id="pwLabel"></span>
+            </div>
+            <div class="pw-checks">
+              <div class="pw-check" data-check="len"><i data-lucide="check-circle-2"></i><span>Mínimo 8 caracteres</span></div>
+              <div class="pw-check" data-check="upper"><i data-lucide="check-circle-2"></i><span>Letra maiúscula</span></div>
+              <div class="pw-check" data-check="num"><i data-lucide="check-circle-2"></i><span>Número</span></div>
+              <div class="pw-check" data-check="special"><i data-lucide="check-circle-2"></i><span>Caractere especial</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Confirmar senha</label>
+          <div class="input-box" id="regConfirmBox">
+            <i data-lucide="lock" class="field-icon"></i>
+            <input type="password" id="regConfirm" placeholder="Repita a senha">
+          </div>
+          <p class="field-error" id="regConfirmError" hidden></p>
+        </div>
+
+        <div class="field">
+          <label class="checkbox terms">
+            <input type="checkbox" id="regTerms">
+            <span>Li e aceito os <a href="#" onclick="return false;">Termos de Uso</a> e a <a href="#" onclick="return false;">Política de Privacidade</a> do OpsManager.</span>
+          </label>
+          <p class="field-error" id="regTermsError" hidden></p>
+        </div>
+
+        <button type="submit" class="btn-primary" id="regSubmit">
+          <span class="btn-content"><i data-lucide="arrow-right"></i> Solicitar Acesso</span>
+          <span class="spinner" hidden></span>
+        </button>
+
+        <p class="switch-text">Já tem acesso? <a class="link-btn strong" href="/login">Fazer login</a></p>
+      </form>
+
+      <!-- REGISTER SUCCESS -->
+      <div id="registerSuccess" class="success-box" hidden>
+        <div class="success-icon"><i data-lucide="check-circle-2"></i></div>
+        <div>
+          <h3>Solicitação enviada!</h3>
+          <p>Seu cadastro foi enviado para análise. Um administrador irá aprovar o acesso e você receberá um e-mail de confirmação em até 24h.</p>
+        </div>
+        <div class="success-summary">
+          <p class="summary-title">Dados enviados</p>
+          <div class="summary-row"><span>Nome</span><strong id="summaryName"></strong></div>
+          <div class="summary-row"><span>E-mail</span><strong id="summaryEmail"></strong></div>
+        </div>
+        <a class="btn-primary" href="/login">Voltar ao Login</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="/static/js/cadastro.js"></script>
+</body>
+</html>

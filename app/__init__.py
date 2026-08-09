@@ -17,8 +17,12 @@ def create_app():
     # ao fim de cada requisição — garante que a conexão sempre fecha
     from database.conexao import close_connection
     app.teardown_appcontext(close_connection)
+    from app.views.cadastro_routes import cadastro_bp
+    from app.views.login_routes import login_bp
     from app.views.operacao_routes import operacao_bp
+    app.register_blueprint(cadastro_bp)
     app.register_blueprint(operacao_bp)
+    app.register_blueprint(login_bp)
     # registra o blueprint do dashboard — agrupa as rotas de /
     # from app.views.dashboard_routes import dashboard_bp
     # app.register_blueprint(dashboard_bp)
