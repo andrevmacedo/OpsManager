@@ -1,6 +1,6 @@
 // ── Configuração da API ──────────────────────────────────────────────────
 // Troque pela URL base do seu backend (ex: 'https://api.seusite.com')
-const API_BASE_URL = 'https://api.seusite.com';
+const API_BASE_URL = '';
 
 // ── Elements ─────────────────────────────────────────────────────────────
 const viewHeading = document.getElementById('viewHeading');
@@ -11,7 +11,7 @@ const forgotForm = document.getElementById('forgotForm');
 const forgotSuccess = document.getElementById('forgotSuccess');
 
 const titles = {
-  login: { heading: 'Bem-vindo de volta', sub: 'Acesse sua conta para continuar' },
+  login: { heading: 'Bem-vindo ao OpsManager!', sub: 'Acesse sua conta para continuar' },
   forgot: { heading: 'Redefinir senha', sub: 'Recupere o acesso à sua conta' },
 };
 
@@ -97,7 +97,7 @@ loginForm.addEventListener('submit', async (e) => {
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      throw new Error(data.message || 'E-mail ou senha inválidos.');
+      throw new Error(data.erro || 'E-mail ou senha inválidos.');
     }
 
     // Se o backend retornar um token (em vez de cookie httpOnly), guarde-o
@@ -111,7 +111,7 @@ loginForm.addEventListener('submit', async (e) => {
     }
 
     // Login OK — redirecione para a área logada:
-    window.location.href = '/dashboard.html';
+    window.location.href = '/operacoes';
 
   } catch (err) {
     loginError.querySelector('p').textContent = err.message || 'Não foi possível fazer login. Tente novamente.';

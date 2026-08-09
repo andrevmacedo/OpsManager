@@ -378,3 +378,7 @@ a { text-decoration: none; }
 .success-box[hidden] {
   display: none;
 }
+/* ── Garantir que [hidden] sempre vence, mesmo com display:flex nas classes ── */
+.field-error[hidden] {
+  display: none;
+}

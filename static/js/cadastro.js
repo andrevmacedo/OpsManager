@@ -90,7 +90,7 @@ registerForm.addEventListener('submit', async (e) => {
   setLoading(regSubmit, true);
 
   try {
-    const response = await fetch(`${API_BASE_URL}/auth/register`, {
+    const response = await fetch(`${API_BASE_URL}/cadastro/criar`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -104,7 +104,7 @@ registerForm.addEventListener('submit', async (e) => {
 
     if (!response.ok) {
       // Ex: 409 quando o e-mail já está cadastrado
-      throw new Error(data.message || 'Não foi possível concluir o cadastro. Tente novamente.');
+      throw new Error(data.erro || 'Não foi possível concluir o cadastro. Tente novamente.');
     }
 
     document.getElementById('summaryName').textContent = regName.value;

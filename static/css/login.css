@@ -287,27 +287,6 @@ a { text-decoration: none; }
 .btn-secondary:hover { background: #f8fafc; }
 .btn-secondary i { width: 14px; height: 14px; }
 
-.divider { display: flex; align-items: center; gap: 12px; }
-.divider span { flex: 1; height: 1px; background: #e2e8f0; }
-.divider em { font-style: normal; font-size: 12px; color: #94a3b8; }
-
-.btn-google {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 12px 0;
-  font-size: 14px;
-  font-weight: 500;
-  color: #334155;
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  transition: background 0.2s;
-}
-.btn-google:hover { background: #f8fafc; }
-
 .switch-text { text-align: center; font-size: 12px; color: #64748b; margin: 0; }
 .intro-text { font-size: 14px; color: #475569; line-height: 1.6; margin: 0; }
 
@@ -377,5 +356,9 @@ a { text-decoration: none; }
 .auth-form[hidden],
 .form-error[hidden],
 .success-box[hidden] {
+  display: none;
+}
+/* ── Garantir que [hidden] sempre vence, mesmo com display:flex nas classes ── */
+.field-error[hidden] {
   display: none;
 }
