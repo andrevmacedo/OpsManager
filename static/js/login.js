@@ -1,5 +1,4 @@
-// ── Configuração da API ──────────────────────────────────────────────────
-// Troque pela URL base do seu backend (ex: 'https://api.seusite.com')
+
 const API_BASE_URL = '';
 
 // ── Elements ─────────────────────────────────────────────────────────────
@@ -59,7 +58,6 @@ function setLoading(button, loading) {
 
 // ── LOGIN ────────────────────────────────────────────────────────────────
 const loginEmail = document.getElementById('loginEmail');
-const rememberMe = document.getElementById('rememberMe');
 const loginEmailBox = document.getElementById('loginEmailBox');
 const loginPasswordBox = document.getElementById('loginPasswordBox');
 const loginError = document.getElementById('loginError');
@@ -82,15 +80,14 @@ loginForm.addEventListener('submit', async (e) => {
   setLoading(loginSubmit, true);
 
   try {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+    const response = await fetch(`${API_BASE_URL}login/acesso`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       // credentials: 'include' -> use isso se o backend definir um cookie
       // httpOnly de sessão (abordagem recomendada, mais segura que token no JS)
       body: JSON.stringify({
         email: loginEmail.value,
-        senha: loginPassword.value,
-        lembrar: rememberMe.checked,
+        senha: loginPassword.value
       }),
     });
 

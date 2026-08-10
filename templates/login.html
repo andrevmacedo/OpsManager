@@ -74,7 +74,7 @@
       <!-- Link para cadastro (página separada) -->
       <div class="tabs" id="tabs">
         <button class="tab active" id="tabLogin">Login</button>
-        <a class="tab" href="/cadastro" id="tabRegister">Cadastro</a>
+        <a class="tab" href="/cadastro" id="tabRegister" onclick="event.preventDefault(); location.replace('/cadastro');">Cadastro</a>
       </div>
 
       <!-- LOGIN FORM -->
@@ -102,10 +102,6 @@
         </div>
 
         <div class="row-between">
-          <label class="checkbox">
-            <input type="checkbox" id="rememberMe">
-            <span>Lembrar acesso</span>
-          </label>
           <button type="button" class="link-btn" id="goForgot">Esqueci minha senha</button>
         </div>
 

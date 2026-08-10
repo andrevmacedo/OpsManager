@@ -217,17 +217,7 @@ a { text-decoration: none; }
 
 .row-between { display: flex; align-items: center; justify-content: space-between; }
 
-.checkbox { display: flex; align-items: center; gap: 8px; cursor: pointer; }
-.checkbox input {
-  width: 14px; height: 14px;
-  accent-color: #2563eb;
-}
-.checkbox span { font-size: 12px; color: #475569; }
-.checkbox.terms { align-items: flex-start; }
-.checkbox.terms input { margin-top: 2px; }
-.checkbox.terms span { line-height: 1.5; }
-.checkbox.terms a { color: #2563eb; font-weight: 500; }
-.checkbox.terms a:hover { text-decoration: underline; }
+
 
 .link-btn {
   background: none;

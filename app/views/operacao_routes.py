@@ -1,4 +1,14 @@
-from flask import Blueprint, current_app, jsonify, render_template, request
+from flask import (
+    Blueprint,
+    current_app,
+    jsonify,
+    make_response,
+    redirect,
+    render_template,
+    request,
+    session,
+    url_for,
+)
 
 from app.services import operacao_service
 
@@ -9,12 +19,17 @@ operacao_bp = Blueprint("operacoes", __name__)
 # GET /operacoes — lista todas as operações
 @operacao_bp.route("/operacoes")
 def index():
-    # busca todas as operações via service
+    # bloqueia acesso de quem não está logado (proteção real, não só visual)
+    if not session.get("usuario_id"):
+        return redirect(url_for("login.index"))
     operacoes = operacao_service.listar()
     # busca as categorias para popular os <select> dos formulários
     categorias = operacao_service.listar_categorias()
     # renderiza o template passando as operações e categorias como variáveis
-    return render_template("operacoes.html", operacoes=operacoes, categorias=categorias)
+    response = make_response(render_template("operacoes.html", operacoes=operacoes, categorias=categorias))
+    # impede o navegador de guardar essa página em cache (bfcache) após logout
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
+    return response
 # POST /operacoes/criar — recebe os dados do formulário e cria uma nova operação
 # methods=["POST"] — só aceita requisições POST, não GET
 @operacao_bp.route("/operacoes/criar", methods=["POST"])

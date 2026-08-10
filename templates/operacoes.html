@@ -54,7 +54,7 @@
       <button class="icon-btn menu-toggle" id="menuBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
       <div class="search-wrap">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" id="topbarSearch" placeholder="Buscar operações, processos...">
+        <input type="text" id="topbarSearch" placeholder="Buscar operações, processos..." autocomplete="off" readonly onfocus="this.removeAttribute('readonly');">
       </div>
       <div class="topbar-actions">
         <button class="icon-btn" id="topbarRefreshBtn" title="Atualizar dados"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button>
@@ -82,7 +82,7 @@
           <div class="dropdown-panel user-panel" id="userPanel">
             <button class="dropdown-item" data-action="profile">Meu perfil</button>
             <button class="dropdown-item" data-action="settings">Configurações</button>
-            <button class="dropdown-item danger" data-action="logout">Sair</button>
+            <a href="/logout" class="dropdown-item danger">Sair</a>
           </div>
         </div>
       </div>
@@ -112,7 +112,7 @@
         <div class="filters-bar">
           <div class="search-input-wrap">
             <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" id="searchInput" placeholder="Buscar por ID, processo ou responsável...">
+            <input type="text" id="searchInput" placeholder="Buscar por ID, processo ou responsável..." autocomplete="off" readonly onfocus="this.removeAttribute('readonly');">
           </div>
           <div class="filter-group">
             <button class="btn" id="refreshBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>Atualizar</button>
